@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum JobStatus {
+  PENDING // waiting to be processed.
+  RUNNING // currently executing.
+  COMPLETED // finished successfully (exitCode = 0).
+  FAILED // failed after all retries.
+  STALLED // worker died while processing.
+}
+
+model Job {
+  id        Int     @id @default(autoincrement())
+  custom_id String? @unique // provided by the user.
+
+  name String
+
+  command     String // shell command that was executed in this job.
+  args        Json? // arguments passed to the shell command.
+  working_dir String? // working directory for execution.
+  timeout     Int? // timeout in seconds,specified by the user.
+
+  std_out   String? @db.Text // standard output of the command.
+  std_err   String? @db.Text // standard error of the command.
+  exit_code Int? // exit code of the command.
+
+  status   JobStatus @default(PENDING) // status of the job.
+  priority Int       @default(0) // priority of the job,lower number means higher priority, max is 2^21.
+
+  max_attempts  Int @default(0) // maximum number of retries,specified by the user.0 means no retries.
+  attempts_made Int @default(0) // number of attempts made.
+
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  processed_on DateTime? // time when job started processing.
+  finished_on  DateTime? // time when job finished.
+
+  failed_reason String? // error message if job failed. This is the latest error message.
+  stack_trace   String? // stack trace of the error.
+
+  lock_token String? // helps in locking the job incase of multiple workers. A job with a lock token is locked and cannot be processed by another worker.
+  // will also be used to identify stalled jobs.
+
+  keep_logs Int?     @default(50) // keep last 50 log entries.
+  job_logs  JobLog[]
+
+  queue    Queue @relation(fields: [queue_id], references: [id], onDelete: Cascade)
+  queue_id Int
+
+  @@index([status, queue_id, lock_token, priority, created_at, id])
+  @@index([queue_id, priority, created_at])
+  @@index([lock_token, status])
+  @@index([queue_id, status])
+  @@index([queue_id, status, processed_on])
+  @@index([custom_id])
+  @@map("job")
+}
+
+model JobLog {
+  id String @id @default(uuid())
+
+  job_id Int
+  job    Job @relation(fields: [job_id], references: [id], onDelete: Cascade)
+
+  // this is the message that was logged.
+  message  String @db.Text
+  sequence Int // this is the sequence number of the log.
+
+  created_at DateTime @default(now())
+
+  @@unique([job_id, sequence])
+  @@index([job_id, sequence])
+  @@map("job_log")
+}
+
+enum QueueStatus {
+  ACTIVE // queue is processing jobs.
+  PAUSED // queue is paused, no new jobs will be processed.
+}
+
+model Queue {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  status QueueStatus @default(ACTIVE)
+
+  default_job_options Json? // default options for jobs in this queue, these are same as the job options. This is done so that we can override the default options for a job when adding a job to the queue. 
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  paused_at  DateTime?
+
+  jobs Job[]
+
+  @@map("queue")
+}
+
+model SystemMetric {
+  id String @id @default(uuid())
+
+  ram_usage_mb      Int // RAM usage in megabytes.
+  cpu_usage_percent Float // CPU usage percentage (0-100).
+  uptime_seconds    Int // System uptime in seconds.
+  timestamp         DateTime @default(now()) // timestamp when the metrics were collected.
+
+  @@index([timestamp])
+  @@map("system_metric")
+}
