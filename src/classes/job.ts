@@ -231,10 +231,11 @@ export class Job {
         this.failedReason = error.message ?? error.toString();
         this.stackTrace = error.stack ?? error.toString();
         this.exitCode = exitCode;
-        this.finishedOn = new Date();
         this.lockToken = undefined;
         this.stdOut = stdOut;
         this.stdErr = stdErr;
+        this.processedOn = new Date();
+        this.finishedOn = new Date();
 
         if (this.shouldRetry()) {
           this.status = JobStatus.PENDING;

@@ -189,6 +189,8 @@ export class Worker extends EventEmitter {
           result.stderr
         );
         this.emit('jobFailed', job, error);
+
+        return;
       } else {
         await job.moveToCompleted(
           result.exitCode,
@@ -196,6 +198,8 @@ export class Worker extends EventEmitter {
           result.stderr
         );
         this.emit('jobCompleted', job);
+
+        return;
       }
     } catch (err: unknown) {
       const error = err instanceof Error ? err : new Error(String(err));

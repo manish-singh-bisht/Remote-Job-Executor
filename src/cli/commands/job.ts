@@ -41,7 +41,7 @@ export function registerJobCommands(program: Command) {
       'Job priority (lower = higher priority)',
       '0'
     )
-    .option('--max-attempts <number>', 'Maximum retry attempts', '3')
+    .option('--max-attempts <number>', 'Maximum retry attempts', '1')
     .option('--timeout <seconds>', 'Timeout in seconds')
     .option('--working-dir <path>', 'Working directory')
     .option('--keep-logs <number>', 'Number of logs to keep', '50')
