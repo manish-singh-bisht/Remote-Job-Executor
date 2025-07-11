@@ -16,7 +16,14 @@ export class Queue extends EventEmitter {
     this.name = name;
 
     this.settings = {
-      defaultJobOptions: options.defaultJobOptions ?? {},
+      defaultJobOptions: options.defaultJobOptions ?? {
+        customId: undefined,
+        priority: 0,
+        maxAttempts: 1,
+        timeout: 30,
+        workingDir: '/tmp',
+        keepLogs: 50,
+      },
     };
   }
 

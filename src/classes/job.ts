@@ -111,15 +111,14 @@ export class Job {
         exit_code: this.exitCode,
         max_attempts: this.maxAttempts,
         attempts_made: this.attemptsMade,
-        stalled_counter: this.stalledCounter,
         processed_on: this.processedOn,
         finished_on: this.finishedOn,
         failed_reason: this.failedReason,
         stack_trace: this.stackTrace,
         lock_token: this.lockToken,
         keep_logs: this.keepLogs,
-        queue_id: this.queueId,
-      };
+        queue: { connect: { id: this.queueId } },
+      } satisfies Prisma.JobCreateInput;
 
       const db = transaction ?? prisma;
 
