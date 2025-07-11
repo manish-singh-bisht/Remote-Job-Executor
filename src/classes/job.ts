@@ -228,8 +228,8 @@ export class Job {
 
         if (!job) throw new Error(`Job ${this.id} not found for locking`);
 
-        this.failedReason = error.message;
-        this.stackTrace = error.stack;
+        this.failedReason = error.message ?? error.toString();
+        this.stackTrace = error.stack ?? error.toString();
         this.exitCode = exitCode;
         this.finishedOn = new Date();
         this.lockToken = undefined;
