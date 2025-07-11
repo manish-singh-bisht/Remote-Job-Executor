@@ -153,7 +153,7 @@ export class Job {
       await prisma.$transaction(async (tx) => {
         const job = await tx.$queryRawUnsafe<any>(
           `SELECT * FROM job WHERE id = $1 FOR UPDATE`,
-          [this.id]
+          this.id
         );
 
         if (!job) throw new Error(`Job ${this.id} not found for locking`);
@@ -186,7 +186,7 @@ export class Job {
       await prisma.$transaction(async (tx) => {
         const job = await tx.$queryRawUnsafe<any>(
           `SELECT * FROM job WHERE id = $1 FOR UPDATE`,
-          [this.id]
+          this.id
         );
 
         if (!job) throw new Error(`Job ${this.id} not found for locking`);
@@ -222,7 +222,7 @@ export class Job {
       await prisma.$transaction(async (tx) => {
         const job = await tx.$queryRawUnsafe<any>(
           `SELECT * FROM job WHERE id = $1 FOR UPDATE`,
-          [this.id]
+          this.id
         );
 
         if (!job) throw new Error(`Job ${this.id} not found for locking`);
@@ -238,11 +238,19 @@ export class Job {
         if (this.shouldRetry()) {
           this.status = JobStatus.PENDING;
           this.finishedOn = undefined;
+          this.lockToken = undefined;
+          this.processedOn = undefined;
+          this.failedReason = undefined;
+          this.stackTrace = undefined;
+
+          await this.save(tx);
+
+          // Immediately notify workers about the retry,which are treated as new jobs.
+          await this.notifyNewJob();
         } else {
           this.status = JobStatus.FAILED;
+          await this.save(tx);
         }
-
-        await this.save(tx);
       });
     } catch (error) {
       throw new Error(`Error moving job ${this.name} to failed: ${error}`);
@@ -269,7 +277,7 @@ export class Job {
         // Lock the Job row to serialize log writes
         await tx.$queryRawUnsafe(
           `
-          SELECT id FROM "Job"
+          SELECT id FROM "job"
           WHERE id = $1
           FOR UPDATE
         `,
@@ -279,7 +287,7 @@ export class Job {
         const lastLog = await tx.$queryRawUnsafe<any>(
           `
           SELECT * FROM "job_log"
-          WHERE "job_id" = $1::bigint
+          WHERE "job_id" = $1
           ORDER BY "sequence" DESC
           LIMIT 1
           `,
