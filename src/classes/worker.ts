@@ -128,10 +128,10 @@ export class Worker extends EventEmitter {
       WHERE id IN (SELECT id FROM next_job)
       RETURNING *
       `,
-      JobStatus.PENDING,
+      'PENDING',
       this.queue.name,
       slotsToFill,
-      JobStatus.RUNNING,
+      'RUNNING',
       lockToken
     );
     if (!result || result.length === 0) return [];

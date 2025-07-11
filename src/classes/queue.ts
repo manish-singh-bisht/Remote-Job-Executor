@@ -243,10 +243,10 @@ export class Queue extends EventEmitter {
         WHERE id IN (SELECT id FROM locked_jobs)
         RETURNING *
         `,
-          JobStatus.RUNNING,
+          'RUNNING',
           threshold,
           this._queueId,
-          JobStatus.STALLED
+          'STALLED'
         );
 
         this.emit('jobStalled', stalledJobs);
