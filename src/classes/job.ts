@@ -29,7 +29,7 @@ export class Job {
 
   public failedReason?: string;
   public stackTrace?: string;
-  public lockToken?: string;
+  public lockToken?: string | null;
   public keepLogs: number = 50;
 
   public queueId: number;
@@ -195,7 +195,7 @@ export class Job {
         this.status = JobStatus.COMPLETED;
         this.exitCode = exitCode;
         this.finishedOn = new Date();
-        this.lockToken = undefined;
+        this.lockToken = null;
         this.stdOut = stdOut;
         this.stdErr = stdErr;
         await this.save(tx);
@@ -231,7 +231,7 @@ export class Job {
         this.failedReason = error.message ?? error.toString();
         this.stackTrace = error.stack ?? error.toString();
         this.exitCode = exitCode;
-        this.lockToken = undefined;
+        this.lockToken = null;
         this.stdOut = stdOut;
         this.stdErr = stdErr;
         this.processedOn = new Date();
@@ -240,7 +240,7 @@ export class Job {
         if (this.shouldRetry()) {
           this.status = JobStatus.PENDING;
           this.finishedOn = undefined;
-          this.lockToken = undefined;
+          this.lockToken = null;
           this.processedOn = undefined;
           this.failedReason = undefined;
           this.stackTrace = undefined;
