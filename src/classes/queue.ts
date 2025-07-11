@@ -65,11 +65,11 @@ export class Queue extends EventEmitter {
   }
 
   /**
-   * @description This is a function to create a queue.
-   * @param name The name of the queue.
-   * @returns The queue.
+   * @description This is a function to create/initialize the queue.
+   * Creates the queue in the database if it doesn't exist, or connects to existing queue.
+   * @returns Promise that resolves when the queue is ready.
    */
-  async createQueue(name: string): Promise<void> {
+  async createQueue(): Promise<void> {
     try {
       await this.waitUntilReady();
     } catch (error) {
