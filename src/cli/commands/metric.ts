@@ -72,30 +72,20 @@ export function registerMetricCommands(program: Command) {
       }
     });
 
-  // example: npx tsx src/cli/commands/metric.ts collect --interval 30
+  // example: npx tsx src/cli/commands/metric.ts collect
   metricCmd
     .command('collect')
-    .description('Start collecting metrics continuously')
-    .option('-i, --interval <seconds>', 'Collection interval in seconds', '60')
+    .description('Collects metric at that particular time stamp')
     .action(async (options) => {
       try {
-        // Sanitize and validate inputs
-        const interval = sanitizeNumber(options.interval, 'interval', 10, 3600);
-
         const metricCollector = new MetricCollector();
 
-        console.log(
-          chalk.green(`🚀 Starting metric collection every ${interval} seconds`)
-        );
-        console.log(chalk.dim('Press Ctrl+C to stop collection'));
+        console.log(chalk.dim('Collecting metric...'));
 
-        // Handle graceful shutdown
-        process.on('SIGINT', () => {
-          console.log(chalk.yellow('\n⏹ Stopping metric collection...'));
-          process.exit(0);
-        });
+        await metricCollector.start();
 
-        metricCollector.start();
+        // Exit the process after collecting metric
+        process.exit(0);
       } catch (error) {
         if (error instanceof ValidationError) {
           console.error(chalk.red(`✗ Validation Error: ${error.message}`));

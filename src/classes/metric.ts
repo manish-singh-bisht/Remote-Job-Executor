@@ -4,10 +4,10 @@ import prisma from '../lib/prisma';
 
 export class MetricCollector {
   /**
-   * @description Start collecting metrics at regular intervals
+   * @description Collects metric at that particular time stamp
    */
-  start(): void {
-    this.collectAndStore();
+  async start(): Promise<void> {
+    await this.collectAndStore();
   }
 
   /**

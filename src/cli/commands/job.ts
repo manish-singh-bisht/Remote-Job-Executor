@@ -460,16 +460,16 @@ export function registerJobCommands(program: Command) {
   jobCmd
     .command('upload-script')
     .description('Upload a script file and optionally make it executable')
-    .requiredOption('--script <path>', 'Local script file path')
+    .option('--script <path>', 'Local script file path')
     .option('--remote-dir <path>', 'Remote directory (defaults to /tmp)')
     .option(
       '--remote-name <name>',
       'Remote filename (defaults to original name)'
     )
     .option('--make-executable', 'Make the script executable after upload')
-    .requiredOption('--ssh-host <host>', 'Remote SSH host')
-    .option('--ssh-port <port>', 'SSH port', '22')
-    .requiredOption('--ssh-user <username>', 'SSH username')
+    .option('--ssh-host <host>', 'Remote SSH host')
+    .option('--ssh-port <port>', 'SSH port')
+    .option('--ssh-user <username>', 'SSH username')
     .option('--ssh-password <password>', 'SSH password (if not using key)')
     .option('--ssh-key <path>', 'Path to SSH private key file')
     .option('--ssh-passphrase <passphrase>', 'SSH key passphrase')
@@ -483,18 +483,27 @@ export function registerJobCommands(program: Command) {
           process.exit(1);
         }
 
+        let privateKey = options.sshKey || process.env.SSH_PRIVATE_KEY;
+        const passphrase = options.sshPassphrase || process.env.SSH_PASSPHRASE;
+        const password = options.sshPassword || process.env.SSH_PASSWORD;
+        const host = options.sshHost || process.env.SSH_HOST;
+        const port = options.sshPort || process.env.SSH_PORT;
+        const username = options.sshUser || process.env.SSH_USERNAME;
+
         // Validate SSH configuration
-        if (!options.sshPassword && !options.sshKey) {
-          console.error(
-            chalk.red('✗ Either SSH password or SSH key must be provided')
-          );
-          process.exit(1);
+        if (!password) {
+          if (!privateKey && !passphrase) {
+            console.error(
+              chalk.red('✗ Either SSH password or SSH key must be provided')
+            );
+            process.exit(1);
+          }
         }
 
         // Sanitize inputs
-        const sshHost = sanitizeSSHHost(options.sshHost);
-        const sshPort = sanitizeNumber(options.sshPort, 'SSH port', 1, 65535);
-        const sshUsername = sanitizeSSHUsername(options.sshUser);
+        const sshHost = sanitizeSSHHost(host);
+        const sshPort = sanitizeNumber(port, 'SSH port', 1, 65535);
+        const sshUsername = sanitizeSSHUsername(username);
 
         // Build remote path
         const scriptName = options.remoteName || path.basename(options.script);
@@ -502,10 +511,9 @@ export function registerJobCommands(program: Command) {
         const remotePath = path.posix.join(remoteDir, scriptName);
 
         // Read private key if provided
-        let privateKey: string | undefined;
-        if (options.sshKey) {
+        if (privateKey) {
           try {
-            const keyPath = sanitizeSSHKeyPath(options.sshKey);
+            const keyPath = sanitizeSSHKeyPath(privateKey);
             privateKey = fs.readFileSync(keyPath, 'utf8');
           } catch (error) {
             console.error(chalk.red(`✗ Failed to read SSH key file: ${error}`));

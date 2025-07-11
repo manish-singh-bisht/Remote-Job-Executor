@@ -73,7 +73,7 @@ export function registerWorkerCommands(program: Command) {
           options.sshHost || process.env.SSH_HOST
         );
         const sshPort = sanitizeNumber(
-          options.sshPort || process.env.SSH_PORT || '22',
+          options.sshPort || process.env.SSH_PORT,
           'SSH port',
           1,
           65535
