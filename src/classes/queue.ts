@@ -232,13 +232,13 @@ export class Queue extends EventEmitter {
         WITH locked_jobs AS (
           SELECT id FROM job
           WHERE
-            status = $1
+            status = $1::"JobStatus"
             AND processed_on < $2
             AND queue_id = $3
           FOR UPDATE SKIP LOCKED
         )
         UPDATE job
-        SET status = $4,
+        SET status = $4::"JobStatus",
             lock_token = NULL
         WHERE id IN (SELECT id FROM locked_jobs)
         RETURNING *
@@ -254,6 +254,46 @@ export class Queue extends EventEmitter {
     } catch (error) {
       throw new Error(
         `Error marking stalled jobs in queue ${this.name}: ${error}`
+      );
+    }
+  }
+
+  /**
+   * @description This is a function to retry stalled jobs that haven't exceeded max attempts.
+   */
+  async retryStalledJobs(): Promise<void> {
+    try {
+      await this.waitUntilReady();
+
+      await prisma.$transaction(async (tx) => {
+        const retriedJobs = await tx.$queryRawUnsafe<any>(
+          `
+        UPDATE job
+        SET status = $1::"JobStatus",
+            lock_token = NULL,
+            failed_reason = NULL,
+            stack_trace = NULL,
+            finished_on = NULL,
+            exit_code = NULL
+        WHERE queue_id = $2
+          AND status = $3::"JobStatus"
+          AND attempts_made < max_attempts
+        RETURNING *
+        `,
+          'PENDING',
+          this._queueId,
+          'STALLED'
+        );
+
+        if (retriedJobs.length > 0) {
+          console.log(
+            `🔄 Retried ${retriedJobs.length} stalled jobs in queue "${this.name}"`
+          );
+        }
+      });
+    } catch (error) {
+      throw new Error(
+        `Error retrying stalled jobs in queue ${this.name}: ${error}`
       );
     }
   }

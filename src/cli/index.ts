@@ -5,7 +5,6 @@ import { Command } from 'commander';
 import { registerQueueCommands } from './commands/queue';
 import { registerJobCommands } from './commands/job';
 import { registerWorkerCommands } from './commands/worker';
-import { registerUtilityCommands } from './commands/utility';
 import { registerMetricCommands } from './commands/metric';
 import { registerSSHCommands } from './commands/ssh';
 import chalk from 'chalk';
@@ -19,7 +18,6 @@ program
 registerQueueCommands(program);
 registerJobCommands(program);
 registerWorkerCommands(program);
-registerUtilityCommands(program);
 registerMetricCommands(program);
 registerSSHCommands(program);
 

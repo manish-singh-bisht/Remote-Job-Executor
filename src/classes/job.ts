@@ -266,14 +266,23 @@ export class Job {
 
     try {
       await prisma.$transaction(async (tx) => {
+        // Lock the Job row to serialize log writes
+        await tx.$queryRawUnsafe(
+          `
+          SELECT id FROM "Job"
+          WHERE id = $1
+          FOR UPDATE
+        `,
+          this.id
+        );
+
         const lastLog = await tx.$queryRawUnsafe<any>(
           `
-        SELECT * FROM "job_log"
-        WHERE "job_id" = $1
-        ORDER BY "sequence" DESC
-        LIMIT 1
-        FOR UPDATE
-        `,
+          SELECT * FROM "job_log"
+          WHERE "job_id" = $1::bigint
+          ORDER BY "sequence" DESC
+          LIMIT 1
+          `,
           this.id
         );
 

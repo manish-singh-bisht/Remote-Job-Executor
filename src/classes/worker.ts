@@ -62,6 +62,8 @@ export class Worker extends EventEmitter {
       }
     });
 
+    await this.queue.retryStalledJobs();
+
     this.running = true;
 
     while (this.running) {
@@ -113,7 +115,7 @@ export class Worker extends EventEmitter {
       `
       WITH next_job AS (
         SELECT id FROM job
-        WHERE status = $1
+        WHERE status = $1::"JobStatus"
           AND queue_id = (SELECT id FROM queue WHERE name = $2)
           AND lock_token IS NULL
         ORDER BY priority ASC, created_at ASC, id ASC
@@ -121,7 +123,7 @@ export class Worker extends EventEmitter {
         LIMIT $3
       )
       UPDATE job
-      SET status = $4,
+      SET status = $4::"JobStatus",
           lock_token = $5,
           processed_on = NOW(),
           attempts_made = attempts_made + 1
@@ -137,13 +139,12 @@ export class Worker extends EventEmitter {
     if (!result || result.length === 0) return [];
 
     return result.map((jobData: any) => {
-      return new Job(
+      const job = new Job(
         jobData.name,
         jobData.command,
         jobData.queue_id,
         jobData.args,
         {
-          ...jobData,
           customId: jobData.custom_id,
           priority: jobData.priority,
           maxAttempts: jobData.max_attempts,
@@ -152,6 +153,22 @@ export class Worker extends EventEmitter {
           keepLogs: jobData.keep_logs,
         }
       );
+
+      job.id = jobData.id;
+      job.status = jobData.status;
+      job.attemptsMade = jobData.attempts_made;
+      job.createdAt = jobData.created_at;
+      job.updatedAt = jobData.updated_at;
+      job.processedOn = jobData.processed_on;
+      job.finishedOn = jobData.finished_on;
+      job.failedReason = jobData.failed_reason;
+      job.stackTrace = jobData.stack_trace;
+      job.lockToken = jobData.lock_token;
+      job.stdOut = jobData.std_out;
+      job.stdErr = jobData.std_err;
+      job.exitCode = jobData.exit_code;
+
+      return job;
     });
   }
 
