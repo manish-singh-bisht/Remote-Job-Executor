@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import 'dotenv/config';
 import { Command } from 'commander';
 import { registerQueueCommands } from './commands/queue';
 import { registerJobCommands } from './commands/job';
@@ -11,7 +12,9 @@ import chalk from 'chalk';
 
 const program = new Command();
 
-program.name('job-queue').description('A job queue management CLI');
+program
+  .name('rje')
+  .description('Remote Job Executor - A job queue management system with CLI');
 
 registerQueueCommands(program);
 registerJobCommands(program);

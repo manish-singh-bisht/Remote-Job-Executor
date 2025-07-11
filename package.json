@@ -1,11 +1,22 @@
 {
-  "name": "remote job executor",
+  "name": "remote-job-executor",
   "version": "1.0.0",
-  "description": "",
+  "description": "Remote Job Executor - A job queue management system with CLI",
+  "main": "dist/index.js",
+  "bin": {
+    "rje": "dist/cli/index.js",
+    "remote-job-executor": "dist/cli/index.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "package.json"
+  ],
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
     "clean": "rm -rf dist",
+    "build:link": "pnpm build && chmod +x dist/cli/index.js && npm link",
     "cli:dev:help": "ts-node src/cli/index.ts --help",
     "lint": "prettier --check src",
     "format": "prettier --write src",

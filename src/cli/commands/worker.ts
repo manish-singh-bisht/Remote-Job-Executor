@@ -79,7 +79,7 @@ export function registerWorkerCommands(program: Command) {
           65535
         );
         const sshUsername = sanitizeSSHUsername(
-          options.sshUser || process.env.SSH_USER
+          options.sshUser || process.env.SSH_USERNAME
         );
         const sshPassword = options.sshPassword || process.env.SSH_PASSWORD;
         const sshKeyPath = options.sshKey || process.env.SSH_KEY_PATH;
