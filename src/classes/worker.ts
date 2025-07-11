@@ -178,12 +178,29 @@ export class Worker extends EventEmitter {
       this.emit('jobStarted', job);
 
       const result = await this.executeJob(job);
-      await job.moveToCompleted(result.exitCode, result.stdout, result.stderr);
 
-      this.emit('jobCompleted', job);
+      // If exit code is not 0, treat as failure but still capture stdout/stderr
+      if (result.exitCode !== 0) {
+        const error = new Error(`Job failed with exit code ${result.exitCode}`);
+        await job.moveToFailed(
+          error,
+          result.exitCode,
+          result.stdout,
+          result.stderr
+        );
+        this.emit('jobFailed', job, error);
+      } else {
+        await job.moveToCompleted(
+          result.exitCode,
+          result.stdout,
+          result.stderr
+        );
+        this.emit('jobCompleted', job);
+      }
     } catch (err: unknown) {
       const error = err instanceof Error ? err : new Error(String(err));
 
+      // Try to get any partial results from the execution
       await job.moveToFailed(error);
 
       this.emit('jobFailed', job, error);
@@ -201,6 +218,8 @@ export class Worker extends EventEmitter {
         stderr: result.stderr,
       };
     } catch (error) {
+      // For timeout or connection errors, we still want to capture any partial output
+      // but we need to throw the error to be handled by processJob
       throw new Error(`Remote execution failed: ${error}`);
     }
   }
