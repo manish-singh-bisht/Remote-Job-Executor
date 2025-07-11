@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   db:
@@ -10,9 +10,21 @@ services:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: bull
     ports:
-      - "5437:5432"
+      - '5437:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  remote-server:
+    build:
+      context: .
+      dockerfile: test-remote-server/Dockerfile
+    container_name: remote-ssh-server
+    ports:
+      - '2222:22'
+    restart: unless-stopped
+    volumes:
+      - remote_data:/home/user/worker
+
 volumes:
   pgdata:
+  remote_data:

@@ -6,6 +6,8 @@ import { registerJobCommands } from './commands/job';
 import { registerWorkerCommands } from './commands/worker';
 import { registerUtilityCommands } from './commands/utility';
 import { registerMetricCommands } from './commands/metric';
+import { registerSSHCommands } from './commands/ssh';
+import chalk from 'chalk';
 
 const program = new Command();
 
@@ -16,5 +18,11 @@ registerJobCommands(program);
 registerWorkerCommands(program);
 registerUtilityCommands(program);
 registerMetricCommands(program);
+registerSSHCommands(program);
+
+program.on('error', (error) => {
+  console.error(chalk.red(`✗ Error: ${(error as Error).message}`));
+  process.exit(1);
+});
 
 program.parse();
