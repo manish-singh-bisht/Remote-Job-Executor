@@ -28,4 +28,13 @@ program.on('error', (error) => {
   process.exit(1);
 });
 
-program.parse();
+program
+  .parseAsync()
+  .then(() => {
+    // Force exit after command completes
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error(chalk.red(`✗ Error: ${(error as Error).message}`));
+    process.exit(1);
+  });

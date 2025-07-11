@@ -19,7 +19,7 @@ export function registerQueueCommands(program: Command) {
     .command('create')
     .description('Create a new queue')
     .requiredOption('-n, --name <name>', 'Queue name')
-    .option('--max-attempts <number>', 'Default max attempts for jobs', '3')
+    .option('--max-attempts <number>', 'Default max attempts for jobs', '1')
     .option('--timeout <seconds>', 'Default timeout for jobs in seconds')
     .option('--working-dir <path>', 'Default working directory')
     .option('--keep-logs <number>', 'Number of logs to keep per job', '50')
@@ -49,9 +49,6 @@ export function registerQueueCommands(program: Command) {
         };
 
         const queue = new Queue(queueName, { defaultJobOptions });
-        await queue.add('test', 'echo "Queue created"', [], {
-          customId: 'init',
-        });
 
         console.log(chalk.green(`✓ Queue "${queueName}" created successfully`));
       } catch (error) {

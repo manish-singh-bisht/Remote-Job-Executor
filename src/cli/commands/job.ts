@@ -54,7 +54,12 @@ export function registerJobCommands(program: Command) {
         const customId = options.customId
           ? sanitizeCustomId(options.customId)
           : undefined;
-        const priority = sanitizeNumber(options.priority, 'priority', 0, 1000);
+        const priority = sanitizeNumber(
+          options.priority,
+          'priority',
+          0,
+          Math.pow(2, 21)
+        );
         const maxAttempts = sanitizeNumber(
           options.maxAttempts,
           'max attempts',

@@ -1,10 +1,10 @@
+import 'dotenv/config';
 import { Command } from 'commander';
 import { Queue } from '../../classes/queue';
 import { Worker } from '../../classes/worker';
 import { RemoteExecutionConfig } from '../../interfaces';
 import chalk from 'chalk';
 import * as fs from 'fs';
-import 'dotenv/config';
 
 import {
   sanitizeQueueName,
@@ -34,7 +34,7 @@ export function registerWorkerCommands(program: Command) {
       '60000'
     )
     .option('--ssh-host <host>', 'Remote SSH host for job execution')
-    .option('--ssh-port <port>', 'SSH port', '22')
+    .option('--ssh-port <port>', 'SSH port')
     .option('--ssh-user <username>', 'SSH username')
     .option('--ssh-password <password>', 'SSH password (if not using key)')
     .option(

@@ -18,9 +18,8 @@ export class Job {
   public stdErr?: string;
   public exitCode?: number;
 
-  public maxAttempts: number = 0;
+  public maxAttempts: number = 1;
   public attemptsMade: number = 0;
-  public stalledCounter: number = 0;
 
   public createdAt?: Date;
   public updatedAt?: Date;
@@ -45,8 +44,8 @@ export class Job {
     this.command = command;
     this.args = args;
     this.customId = options?.customId;
-    this.priority = options?.priority ?? 0; // TODO: validate the range of priority.
-    this.maxAttempts = options?.maxAttempts ?? 0;
+    this.priority = options?.priority ?? 0;
+    this.maxAttempts = options?.maxAttempts ?? 1;
     this.timeout = options?.timeout;
     this.workingDir = options?.workingDir;
     this.keepLogs = options?.keepLogs ?? 50;
