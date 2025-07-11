@@ -7,7 +7,9 @@
     "start": "ts-node src/index.ts",
     "dev:cli": "ts-node src/cli/index.ts",
     "prisma:generate": "pnpm exec prisma generate",
-    "prisma:studio": "pnpm exec prisma studio"
+    "prisma:studio": "pnpm exec prisma studio",
+    "prisma:migrate": "pnpm exec prisma migrate dev",
+    "prisma:push": "pnpm exec prisma db push"
   },
   "keywords": [],
   "author": "Manish Singh Bisht",
@@ -15,7 +17,7 @@
   "packageManager": "pnpm@10.10.0",
   "dependencies": {
     "@prisma/client": "^6.11.1",
-    "chalk": "^5.4.1",
+    "chalk": "4.1.2",
     "cli-table3": "^0.6.5",
     "commander": "^14.0.0",
     "dotenv": "^17.2.0",
