@@ -51,6 +51,8 @@ export function registerQueueCommands(program: Command) {
 
         const queue = new Queue(queueName, { defaultJobOptions });
 
+        await queue.createQueue(queueName);
+
         console.log(chalk.green(`✓ Queue "${queueName}" created successfully`));
       } catch (error) {
         if (error instanceof ValidationError) {
