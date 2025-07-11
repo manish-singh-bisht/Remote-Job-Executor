@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { EventEmitter } from 'events';
 import prisma from '../lib/prisma';
 import { JobStatus } from '../../generated/prisma';

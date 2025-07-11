@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Command } from 'commander';
 import { Queue } from '../../classes/queue';
 import { Job } from '../../classes/job';

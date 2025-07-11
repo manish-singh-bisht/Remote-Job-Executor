@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Command } from 'commander';
 import { RemoteExecutor } from '../../classes/remote-executor';
 import {

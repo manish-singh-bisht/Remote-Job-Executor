@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import * as process from 'process';
 import prisma from '../lib/prisma';
 

@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { EventEmitter } from 'stream';
 import { JobStatus, Prisma, QueueStatus } from '../../generated/prisma';
 import { JobOptions, QueueOptions, QueueStats } from '../interfaces';

@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Command } from 'commander';
 import { MetricCollector } from '../../classes/metric';
 import chalk from 'chalk';

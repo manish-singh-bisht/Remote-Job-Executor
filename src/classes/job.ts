@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { JobStatus, Prisma } from '../../generated/prisma';
 import { JobExecutionContext, JobOptions } from '../interfaces';
 import { getPgClient } from '../lib/pg';

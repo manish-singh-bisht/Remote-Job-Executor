@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { NodeSSH } from 'node-ssh';
 import { Job } from './job';
 import { RemoteExecutionConfig, ExecutionResult } from '../interfaces';
