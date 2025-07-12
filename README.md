@@ -13,8 +13,8 @@ Remote-Job-Executor is a comprehensive solution for:
 - **CLI Interface**: Easy-to-use command-line interface for all operations.
 
 ## DEMO
-[Screencast from 12-07-25 05:33:47 AM IST.webm](https://github.com/user-attachments/assets/92318d57-2fef-4331-90e1-66cab171566b)
 
+[Screencast from 12-07-25 05:33:47 AM IST.webm](https://github.com/user-attachments/assets/92318d57-2fef-4331-90e1-66cab171566b)
 
 ## Local Installation
 
@@ -76,6 +76,20 @@ Remote-Job-Executor is a comprehensive solution for:
    ```bash
    # Test the CLI
    rje --help
+   ```
+8. **Test DB setup**
+
+   ```bash
+
+   # To run tests, you will need a test DB, setup one locally.
+   # Push the schema to the test DB
+
+   DATABASE_URL="postgresql://your_user:your_password@localhost:5432/remote_job_test" pnpm prisma db push
+
+   # To run tests
+
+   pnpm test
+
    ```
 
 ## Quick Start

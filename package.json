@@ -24,7 +24,9 @@
     "prisma:studio": "pnpm exec prisma studio",
     "prisma:migrate": "pnpm exec prisma migrate dev",
     "prisma:push": "pnpm exec prisma db push",
-    "prisma:migrate:reset": "pnpm prisma migrate reset"
+    "prisma:migrate:reset": "pnpm prisma migrate reset",
+    "test": "NODE_OPTIONS='--import tsx' pnpm exec mocha --timeout 10000 --exit",
+    "test:watch": "NODE_OPTIONS='--import tsx' pnpm exec mocha --watch --timeout 10000 --exit"
   },
   "keywords": [],
   "author": "Manish Singh Bisht",
@@ -39,17 +41,25 @@
     "express": "^5.1.0",
     "node-ssh": "^13.2.1",
     "pg": "^8.16.3",
-    "shell-escape": "^0.2.0"
+    "shell-escape": "^0.2.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@types/chai": "^5.2.2",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^24.0.10",
     "@types/pg": "^8.15.4",
     "@types/shell-escape": "^0.2.3",
+    "@types/sinon": "^17.0.4",
+    "chai": "^5.2.1",
+    "mocha": "^11.7.1",
     "nodemon": "^3.1.10",
     "prettier": "^3.0.0",
     "prettier-plugin-prisma": "^5.0.0",
     "prisma": "^6.11.1",
+    "sinon": "^21.0.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }

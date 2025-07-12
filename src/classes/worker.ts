@@ -9,6 +9,7 @@ import { Client, Notification } from 'pg';
 import { Queue } from './queue';
 import { RemoteExecutor } from './remote-executor';
 import { RemoteExecutionConfig } from '../interfaces';
+import { v4 as uuidv4 } from 'uuid';
 
 export class Worker extends EventEmitter {
   private running = false;
@@ -109,8 +110,7 @@ export class Worker extends EventEmitter {
   }
 
   private async fetchAndLockNextJobs(slotsToFill: number): Promise<Job[]> {
-    // TODO: use uuidv4
-    const lockToken = `${process.pid}-${Date.now()}-${Math.random()}`;
+    const lockToken = uuidv4();
 
     const result = await prisma.$queryRawUnsafe<any>(
       `
