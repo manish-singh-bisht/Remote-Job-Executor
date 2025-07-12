@@ -379,6 +379,7 @@ export function sanitizeStatus(status: string): string {
     'COMPLETED',
     'FAILED',
     'STALLED',
+    'CANCELLED',
   ];
 
   if (!validStatuses.includes(upperStatus)) {

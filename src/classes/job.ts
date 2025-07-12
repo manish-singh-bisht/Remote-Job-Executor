@@ -535,6 +535,90 @@ export class Job {
   }
 
   /**
+   * @description This is a function to move the job to cancelled.
+   * @param reason The reason for cancellation.
+   */
+  async moveToCancelled(
+    reason: string = 'Job cancelled by user'
+  ): Promise<void> {
+    if (!this.id) throw new Error('Job ID is required');
+    try {
+      await prisma.$transaction(async (tx) => {
+        const job = await tx.$queryRawUnsafe<any>(
+          `SELECT * FROM job WHERE id = $1 FOR UPDATE`,
+          this.id
+        );
+
+        if (!job) throw new Error(`Job ${this.id} not found for locking`);
+
+        this.status = JobStatus.CANCELLED;
+        this.failedReason = reason;
+        this.finishedOn = new Date();
+        this.lockToken = null;
+
+        await this.save(tx);
+      });
+    } catch (error) {
+      throw new Error(`Error moving job ${this.name} to cancelled: ${error}`);
+    }
+  }
+
+  /**
+   * @description Static method to cancel a job (only if it's pending).
+   * @param jobId The job ID to cancel.
+   * @param reason The reason for cancellation.
+   */
+  static async cancelJob(
+    jobId: number,
+    reason: string = 'Job cancelled by user'
+  ): Promise<void> {
+    try {
+      await prisma.$transaction(async (tx) => {
+        const jobLockResult = await tx.$queryRawUnsafe<any>(
+          `
+      SELECT id FROM "Job"
+      WHERE id = $1
+      FOR UPDATE
+    `,
+          jobId
+        );
+
+        if (jobLockResult.length === 0) {
+          throw new Error(`Job ${jobId} not found`);
+        }
+
+        const job = await tx.job.findUnique({
+          where: { id: jobId },
+          select: { id: true, status: true, name: true },
+        });
+
+        if (!job) {
+          throw new Error(`Job ${jobId} not found after lock`);
+        }
+
+        // TODO: do it for running jobs, by killing the process in remote server.
+        if (job.status !== JobStatus.PENDING) {
+          throw new Error(
+            `Job ${jobId} cannot be cancelled. Only pending jobs can be cancelled. Current status: ${job.status}`
+          );
+        }
+
+        await tx.job.update({
+          where: { id: jobId },
+          data: {
+            status: JobStatus.CANCELLED,
+            failed_reason: reason,
+            finished_on: new Date(),
+            lock_token: null,
+          },
+        });
+      });
+    } catch (error) {
+      throw new Error(`Error cancelling job ${jobId}: ${error}`);
+    }
+  }
+
+  /**
    * @description Static method to find a queue by name.
    * @param name The queue name.
    * @returns The queue record or null.

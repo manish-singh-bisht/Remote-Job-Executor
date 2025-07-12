@@ -113,7 +113,7 @@ export function registerJobCommands(program: Command) {
     .requiredOption('-q, --queue <name>', 'Queue name')
     .option(
       '-s, --status <status>',
-      'Filter by status (PENDING, RUNNING, COMPLETED, FAILED, STALLED)'
+      'Filter by status (PENDING, RUNNING, COMPLETED, FAILED, STALLED, CANCELLED)'
     )
     .option('-p, --page <number>', 'Page number (20 items per page)', '1')
     .action(async (options) => {
@@ -173,6 +173,8 @@ export function registerJobCommands(program: Command) {
                 return chalk.red(status);
               case 'STALLED':
                 return chalk.magenta(status);
+              case 'CANCELLED':
+                return chalk.gray(status);
               default:
                 return chalk.white(status);
             }
@@ -265,9 +267,15 @@ export function registerJobCommands(program: Command) {
         console.log(`Command: ${job.command}`);
         console.log(`Args: ${job.args ? JSON.stringify(job.args) : 'None'}`);
         console.log(`Working Dir: ${job.working_dir || 'None'}`);
-        console.log(
-          `Status: ${chalk[job.status === 'COMPLETED' ? 'green' : job.status === 'FAILED' ? 'red' : 'yellow'](job.status)}`
-        );
+        const statusColor =
+          job.status === 'COMPLETED'
+            ? 'green'
+            : job.status === 'FAILED'
+              ? 'red'
+              : job.status === 'CANCELLED'
+                ? 'gray'
+                : 'yellow';
+        console.log(`Status: ${chalk[statusColor](job.status)}`);
         console.log(`Priority: ${job.priority}`);
         console.log(`Attempts: ${job.attempts_made}/${job.max_attempts}`);
         console.log(`Timeout: ${job.timeout ? `${job.timeout}s` : 'None'}`);
@@ -451,6 +459,63 @@ export function registerJobCommands(program: Command) {
         } else {
           console.error(
             chalk.red(`✗ Error retrying job: ${(error as Error).message}`)
+          );
+        }
+      }
+    });
+
+  // example: npx tsx src/cli/commands/job.ts cancel --id 1
+  jobCmd
+    .command('cancel')
+    .description('Cancel a pending job')
+    .option('-i, --id <id>', 'Job ID')
+    .option('--custom-id <id>', 'Custom job ID')
+    .option('-q, --queue <name>', 'Queue name (required with custom-id)')
+    .option(
+      '-r, --reason <reason>',
+      'Reason for cancellation',
+      'Job cancelled by user'
+    )
+    .action(async (options) => {
+      try {
+        let jobId;
+
+        if (options.id) {
+          jobId = sanitizeNumber(options.id, 'job ID', 1);
+        } else if (options.customId) {
+          if (!options.queue) {
+            console.error(
+              chalk.red('✗ Queue name is required when using custom-id')
+            );
+            return;
+          }
+          const customId = sanitizeCustomId(options.customId);
+          const queueName = sanitizeQueueName(options.queue);
+          const job = await Job.findByCustomId(customId, queueName);
+          if (!job) {
+            console.error(chalk.red('✗ Job not found'));
+            return;
+          }
+          jobId = job.id;
+        } else {
+          console.error(
+            chalk.red('✗ Either --id or --custom-id must be provided')
+          );
+          return;
+        }
+
+        const reason = options.reason || 'Job cancelled by user';
+
+        await Job.cancelJob(jobId, reason);
+
+        console.log(chalk.green(`✓ Job ${jobId} has been cancelled`));
+        console.log(chalk.dim(`Reason: ${reason}`));
+      } catch (error) {
+        if (error instanceof ValidationError) {
+          console.error(chalk.red(`✗ Validation Error: ${error.message}`));
+        } else {
+          console.error(
+            chalk.red(`✗ Error cancelling job: ${(error as Error).message}`)
           );
         }
       }

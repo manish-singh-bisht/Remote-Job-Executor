@@ -23,7 +23,8 @@
     "prisma:generate": "pnpm exec prisma generate",
     "prisma:studio": "pnpm exec prisma studio",
     "prisma:migrate": "pnpm exec prisma migrate dev",
-    "prisma:push": "pnpm exec prisma db push"
+    "prisma:push": "pnpm exec prisma db push",
+    "prisma:migrate:reset": "pnpm prisma migrate reset"
   },
   "keywords": [],
   "author": "Manish Singh Bisht",

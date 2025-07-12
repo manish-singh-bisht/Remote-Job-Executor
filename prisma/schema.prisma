@@ -20,6 +20,7 @@ enum JobStatus {
   COMPLETED // finished successfully (exitCode = 0).
   FAILED // failed after all retries.
   STALLED // worker died while processing.
+  CANCELLED // job was cancelled by user.
 }
 
 model Job {
