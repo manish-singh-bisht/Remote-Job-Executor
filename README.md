@@ -12,6 +12,10 @@ Remote-Job-Executor is a comprehensive solution for:
 - **Worker Management**: Manage worker processes that execute your jobs.
 - **CLI Interface**: Easy-to-use command-line interface for all operations.
 
+## DEMO
+[Screencast from 12-07-25 05:33:47 AM IST.webm](https://github.com/user-attachments/assets/92318d57-2fef-4331-90e1-66cab171566b)
+
+
 ## 📦 Local Installation
 
 ### Prerequisites
