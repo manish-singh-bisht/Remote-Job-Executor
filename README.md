@@ -1,10 +1,6 @@
 # Remote-Job-Executor
 
-Remote-Job-Executor is a lightweight system inspired by BullMQ. It allows you to queue jobs(shell commands for now) locally and execute them remotely over SSH.
-
-## What is Remote-Job-Executor?
-
-Remote-Job-Executor is a comprehensive solution for:
+Remote-Job-Executor is a lightweight system. It allows you to queue jobs(shell commands for now) locally and execute them remotely over SSH.
 
 - **Queue Management**: Create and manage job queues with different priorities and configurations.
 - **Remote Execution**: Execute commands and scripts on remote servers via SSH.
