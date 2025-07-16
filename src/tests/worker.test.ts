@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import sinon from 'sinon';
-import { Worker } from '../src/classes/worker';
-import { Queue } from '../src/classes/queue';
-import { Job } from '../src/classes/job';
-import prisma from '../src/lib/prisma';
-import { RemoteExecutor } from '../src/classes/remote-executor';
-import { closePgClient } from '../src/lib/pg';
+import { Worker } from '../classes/worker';
+import { Queue } from '../classes/queue';
+import { Job } from '../classes/job';
+import prisma from '../lib/prisma';
+import { RemoteExecutor } from '../classes/remote-executor';
+import { closePgClient } from '../lib/pg';
 
 describe('Worker', () => {
   let queue: Queue;

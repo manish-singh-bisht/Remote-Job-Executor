@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { describe, it, beforeEach, after } from 'mocha';
-import prisma from '../src/lib/prisma';
-import { Queue } from '../src/classes/queue';
-import { JobStatus } from '../generated/prisma';
+import prisma from '../lib/prisma';
+import { Queue } from '../classes/queue';
+import { JobStatus } from '../../generated/prisma';
 import { v4 as uuidv4 } from 'uuid';
-import { closePgClient } from '../src/lib/pg';
+import { closePgClient } from '../lib/pg';
 
 describe('Job & Queue Integration', () => {
   let queue: Queue;

@@ -1,4 +1,4 @@
 module.exports = {
-  spec: 'tests/**/*.test.ts',
+  spec: 'src/tests/**/*.test.ts',
   extension: ['ts'],
 };

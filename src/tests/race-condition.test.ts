@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach, after } from 'mocha';
 import sinon from 'sinon';
-import prisma from '../src/lib/prisma';
-import { Queue } from '../src/classes/queue';
-import { Worker } from '../src/classes/worker';
-import { Job } from '../src/classes/job';
-import { RemoteExecutor } from '../src/classes/remote-executor';
-import { closePgClient } from '../src/lib/pg';
+import prisma from '../lib/prisma';
+import { Queue } from '../classes/queue';
+import { Worker } from '../classes/worker';
+import { Job } from '../classes/job';
+import { RemoteExecutor } from '../classes/remote-executor';
+import { closePgClient } from '../lib/pg';
 
 // race condition are non-deterministic, so we this test ensures that only one worker processes a job in an environment that may have race condition
 describe('Race condition test', () => {
