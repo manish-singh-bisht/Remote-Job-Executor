@@ -10,7 +10,7 @@ Remote-Job-Executor is a lightweight job execution system that enables you to qu
 
 ## DEMO
 
-[Screencast from 12-07-25 05:33:47 AM IST.webm](https://github.com/user-attachments/assets/92318d57-2fef-4331-90e1-66cab171566b)
+[Screencast from 12-07-25 05:33:47 AM IST.webm](https://github.com/user-attachments/assets/fd4650c8-d1b8-4f25-a68e-f5b88d034a65)
 
 ## Local Installation
 
