@@ -1,6 +1,6 @@
 # Remote-Job-Executor
 
-Remote-Job-Executor is a lightweight system. It allows you to queue jobs(shell commands for now) locally and execute them remotely over SSH.
+Remote-Job-Executor is a lightweight job execution system that enables you to queue and execute shell commands across remote servers via SSH.
 
 - **Queue Management**: Create and manage job queues with different priorities and configurations.
 - **Remote Execution**: Execute commands and scripts on remote servers via SSH.
